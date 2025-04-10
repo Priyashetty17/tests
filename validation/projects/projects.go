@@ -10,13 +10,11 @@ import (
 
 	v3 "github.com/rancher/rancher/pkg/apis/management.cattle.io/v3"
 	"github.com/rancher/shepherd/clients/rancher"
-	management "github.com/rancher/shepherd/clients/rancher/generated/management/v3"
 	v1 "github.com/rancher/shepherd/clients/rancher/v1"
 	namegen "github.com/rancher/shepherd/pkg/namegenerator"
 	clusterapi "github.com/rancher/tests/actions/kubeapi/clusters"
 	"github.com/rancher/tests/actions/kubeapi/namespaces"
 	"github.com/rancher/tests/actions/kubeapi/projects"
-	rbacapi "github.com/rancher/tests/actions/kubeapi/rbac"
 	quotas "github.com/rancher/tests/actions/kubeapi/resourcequotas"
 	"github.com/rancher/tests/actions/kubeapi/workloads/deployments"
 	"github.com/rancher/tests/actions/workloads"
@@ -33,16 +31,6 @@ const (
 	containerDefaultLimitAnnotation = "field.cattle.io/containerDefaultResourceLimit"
 	resourceQuotaStatusAnnotation   = "cattle.io/status"
 )
-
-var prtb = v3.ProjectRoleTemplateBinding{
-	ObjectMeta: metav1.ObjectMeta{
-		Name:      "",
-		Namespace: "",
-	},
-	ProjectName:       "",
-	RoleTemplateName:  "",
-	UserPrincipalName: "",
-}
 
 func createProjectAndNamespace(client *rancher.Client, clusterID string, project *v3.Project) (*v3.Project, *corev1.Namespace, error) {
 	createdProject, err := client.WranglerContext.Mgmt.Project().Create(project)
@@ -84,22 +72,6 @@ func createProjectAndNamespaceWithLimits(client *rancher.Client, clusterID strin
 	}
 
 	return createdProject, createdNamespace, nil
-}
-
-func createProjectRoleTemplateBinding(client *rancher.Client, user *management.User, project *v3.Project, projectRole string) (*v3.ProjectRoleTemplateBinding, error) {
-	projectName := fmt.Sprintf("%s:%s", project.Namespace, project.Name)
-	prtb.Name = namegen.AppendRandomString("prtb-")
-	prtb.Namespace = project.Name
-	prtb.ProjectName = projectName
-	prtb.RoleTemplateName = projectRole
-	prtb.UserPrincipalName = user.PrincipalIDs[0]
-
-	createdProjectRoleTemplateBinding, err := rbacapi.CreateProjectRoleTemplateBinding(client, &prtb)
-	if err != nil {
-		return nil, err
-	}
-
-	return createdProjectRoleTemplateBinding, nil
 }
 
 func checkAnnotationExistsInNamespace(client *rancher.Client, clusterID string, namespaceName string, annotationKey string, expectedExistence bool) error {
