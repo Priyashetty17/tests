@@ -9,8 +9,9 @@ import (
 
 	"github.com/rancher/shepherd/clients/rancher"
 	"github.com/rancher/shepherd/extensions/defaults"
-	clusterapi "github.com/rancher/shepherd/extensions/kubeapi/cluster"
-	quotas "github.com/rancher/tests/actions/kubeapi/resourcequotas"
+	extclusterapi "github.com/rancher/shepherd/extensions/kubeapi/cluster"
+	extnamespaceapi "github.com/rancher/shepherd/extensions/kubeapi/namespaces"
+	quotaapi "github.com/rancher/tests/actions/kubeapi/resourcequotas"
 	"github.com/rancher/tests/actions/workloads/pods"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -20,7 +21,7 @@ import (
 
 // VerifyAnnotationInNamespace checks if a specific annotation exists or not in a namespace.
 func VerifyAnnotationInNamespace(client *rancher.Client, clusterID, namespaceName, annotationKey string, expectedToExist bool) error {
-	namespace, err := GetNamespaceByName(client, clusterID, namespaceName)
+	namespace, err := extnamespaceapi.GetNamespaceByName(client, clusterID, namespaceName)
 	if err != nil {
 		return err
 	}
@@ -43,7 +44,7 @@ func VerifyAnnotationInNamespace(client *rancher.Client, clusterID, namespaceNam
 
 // VerifyNamespaceResourceQuota verifies that the namespace resource quota contains the expected hard limits.
 func VerifyNamespaceResourceQuota(client *rancher.Client, clusterID, namespaceName string, expectedQuota map[string]string) error {
-	resourceQuotas, err := quotas.ListResourceQuotas(client, clusterID, namespaceName, metav1.ListOptions{})
+	resourceQuotas, err := quotaapi.ListResourceQuotas(client, clusterID, namespaceName, metav1.ListOptions{})
 	if err != nil {
 		return err
 	}
@@ -72,7 +73,7 @@ func VerifyNamespaceResourceQuota(client *rancher.Client, clusterID, namespaceNa
 
 // VerifyLimitRange verifies that the LimitRange in the specified namespace matches the expected CPU and memory limits and requests.
 func VerifyLimitRange(client *rancher.Client, clusterID, namespaceName string, expectedCPULimit, expectedCPURequest, expectedMemoryLimit, expectedMemoryRequest string) error {
-	clusterContext, err := clusterapi.GetClusterWranglerContext(client, clusterID)
+	clusterContext, err := extclusterapi.GetClusterWranglerContext(client, clusterID)
 	if err != nil {
 		return err
 	}
@@ -187,7 +188,7 @@ func VerifyContainerResources(client *rancher.Client, clusterID, namespaceName, 
 
 // VerifyUsedNamespaceResourceQuota checks if the used resources in a namespace's ResourceQuota match the expected values.
 func VerifyUsedNamespaceResourceQuota(client *rancher.Client, clusterID, namespace string, expectedUsed map[string]string) error {
-	ctx, err := clusterapi.GetClusterWranglerContext(client, clusterID)
+	ctx, err := extclusterapi.GetClusterWranglerContext(client, clusterID)
 	if err != nil {
 		return err
 	}
@@ -225,12 +226,12 @@ func VerifyNamespaceResourceQuotaValidationStatus(client *rancher.Client, cluste
 	expectedErrorMessage string,
 ) error {
 
-	namespace, err := GetNamespaceByName(client, clusterID, namespaceName)
+	namespace, err := extnamespaceapi.GetNamespaceByName(client, clusterID, namespaceName)
 	if err != nil {
 		return err
 	}
 
-	annotationData, err := getNamespaceAnnotationAsMap(client, clusterID, namespace.Name, ResourceQuotaAnnotation)
+	annotationData, err := GetNamespaceAnnotation(client, clusterID, namespace.Name, ResourceQuotaAnnotation)
 	if err != nil {
 		return err
 	}
@@ -279,7 +280,7 @@ func VerifyNamespaceResourceQuotaValidationStatus(client *rancher.Client, cluste
 		return fmt.Errorf("missing %q annotation on namespace", ResourceQuotaStatusAnnotation)
 	}
 
-	status, message, err := getConditionStatusAndMessageFromAnnotation(statusAnnotation, "ResourceQuotaValidated")
+	status, message, err := GetConditionStatusAndMessageFromAnnotation(statusAnnotation, "ResourceQuotaValidated")
 	if err != nil {
 		return err
 	}
@@ -295,30 +296,99 @@ func VerifyNamespaceResourceQuotaValidationStatus(client *rancher.Client, cluste
 	return nil
 }
 
-func getNamespaceAnnotationAsMap(client *rancher.Client, clusterID string, namespaceName, annotationKey string) (map[string]interface{}, error) {
-	namespace, err := GetNamespaceByName(client, clusterID, namespaceName)
+// VerifyNamespaceHasNoResourceQuota checks that there are no ResourceQuota objects in the specified namespace.
+func VerifyNamespaceHasNoResourceQuota(client *rancher.Client, clusterID, namespace string) error {
+	ctx, err := extclusterapi.GetClusterWranglerContext(client, clusterID)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	if namespace.Annotations == nil {
-		return nil, fmt.Errorf("namespace %q has no annotations", namespaceName)
+	rqList, err := ctx.Core.ResourceQuota().List(namespace, metav1.ListOptions{})
+	if err != nil {
+		return err
 	}
 
-	limitAnnotation, exists := namespace.Annotations[annotationKey]
-	if !exists || limitAnnotation == "" {
-		return nil, fmt.Errorf("annotation %q not found on namespace %q", annotationKey, namespaceName)
+	if len(rqList.Items) != 0 {
+		return fmt.Errorf("expected no ResourceQuota in namespace %s, but found %d", namespace, len(rqList.Items))
 	}
 
-	var data map[string]interface{}
-	if err := json.Unmarshal([]byte(limitAnnotation), &data); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal annotation %q: %w", annotationKey, err)
-	}
-
-	return data, nil
+	return nil
 }
 
-func getConditionStatusAndMessageFromAnnotation(annotation string, conditionType string) (string, string, error) {
+// VerifyAnnotationExistsInNamespace checks if the specified annotation key exists in the namespace and matches the expected existence.
+func VerifyAnnotationExistsInNamespace(client *rancher.Client, clusterID string, namespaceName string, annotationKey string, expectedExistence bool) error {
+	namespace, err := extnamespaceapi.GetNamespaceByName(client, clusterID, namespaceName)
+	if err != nil {
+		return err
+	}
+
+	_, exists := namespace.Annotations[annotationKey]
+	if (expectedExistence && !exists) || (!expectedExistence && exists) {
+		errorMessage := fmt.Sprintf("Annotation '%s' should%s exist", annotationKey, map[bool]string{true: "", false: " not"}[expectedExistence])
+		return errors.New(errorMessage)
+	}
+
+	return nil
+}
+
+// VerifyNamespacePodResourceQuota checks if the namespace resource quota contains the expected hard limits for pods.
+func VerifyNamespacePodResourceQuota(client *rancher.Client, clusterID, namespaceName string, expectedPodLimit int) error {
+	quotas, err := quotaapi.ListResourceQuotas(client, clusterID, namespaceName, metav1.ListOptions{})
+	if err != nil {
+		return err
+	}
+	if len(quotas.Items) != 1 {
+		return fmt.Errorf("expected resource quota count is 1, but got %d", len(quotas.Items))
+	}
+
+	resourceList := quotas.Items[0].Spec.Hard
+	actualPodLimit, ok := resourceList[corev1.ResourcePods]
+	if !ok {
+		return fmt.Errorf("pod limit not found in the resource quota")
+	}
+	podLimit := int(actualPodLimit.Value())
+	if podLimit != expectedPodLimit {
+		return fmt.Errorf("pod limit in the resource quota: %d does not match the expected value: %d", podLimit, expectedPodLimit)
+	}
+
+	return nil
+}
+
+// VerifyNamespacePodQuotaValidationStatus checks if the resource quota annotation in a namespace matches the expected pod limits and validation status.
+func VerifyNamespacePodQuotaValidationStatus(client *rancher.Client, clusterID, namespaceName, namespacePodLimit string, expectedStatus bool, expectedErrorMessage string) error {
+	namespace, err := extnamespaceapi.GetNamespaceByName(client, clusterID, namespaceName)
+	if err != nil {
+		return err
+	}
+
+	limitData, err := GetNamespaceAnnotation(client, clusterID, namespace.Name, ResourceQuotaAnnotation)
+	if err != nil {
+		return err
+	}
+	actualNamespacePodLimit := limitData["limit"].(map[string]interface{})["pods"]
+
+	if actualNamespacePodLimit != namespacePodLimit {
+		return fmt.Errorf("namespace pod limit mismatch in the namespace spec. expected: %s, actual: %s", namespacePodLimit, actualNamespacePodLimit)
+	}
+
+	status, message, err := GetConditionStatusAndMessageFromAnnotation(namespace.Annotations[ResourceQuotaStatusAnnotation], "ResourceQuotaValidated")
+	if err != nil {
+		return err
+	}
+
+	if (status == "True") != expectedStatus {
+		return fmt.Errorf("resource quota validation status mismatch. expected: %t, actual: %s", expectedStatus, status)
+	}
+
+	if !strings.Contains(message, expectedErrorMessage) {
+		return fmt.Errorf("Error message does not contain expected substring: %s", expectedErrorMessage)
+	}
+
+	return nil
+}
+
+// GetConditionStatusAndMessageFromAnnotation is a helper to parse the annotation value for a specific condition type and return the status and message.
+func GetConditionStatusAndMessageFromAnnotation(annotation string, conditionType string) (string, string, error) {
 	var annotationData map[string][]map[string]string
 	if err := json.Unmarshal([]byte(annotation), &annotationData); err != nil {
 		return "", "", fmt.Errorf("error parsing JSON: %v", err)
@@ -339,23 +409,4 @@ func getConditionStatusAndMessageFromAnnotation(annotation string, conditionType
 	}
 
 	return "", "", fmt.Errorf("no condition of type '%s' found", conditionType)
-}
-
-// VerifyNamespaceHasNoResourceQuota checks that there are no ResourceQuota objects in the specified namespace.
-func VerifyNamespaceHasNoResourceQuota(client *rancher.Client, clusterID, namespace string) error {
-	ctx, err := clusterapi.GetClusterWranglerContext(client, clusterID)
-	if err != nil {
-		return err
-	}
-
-	rqList, err := ctx.Core.ResourceQuota().List(namespace, metav1.ListOptions{})
-	if err != nil {
-		return err
-	}
-
-	if len(rqList.Items) != 0 {
-		return fmt.Errorf("expected no ResourceQuota in namespace %s, but found %d", namespace, len(rqList.Items))
-	}
-
-	return nil
 }
