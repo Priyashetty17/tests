@@ -64,7 +64,7 @@ require (
 	github.com/rancher/backup-restore-operator v1.2.1
 	github.com/rancher/fleet/pkg/apis v0.15.0-alpha.4
 	github.com/rancher/norman v0.8.1
-	github.com/rancher/qa-infra-automation v0.0.0-20260319191229-cfc3fdaefc20
+	github.com/rancher/qa-infra-automation v0.0.0-20260507233117-6c698fa52007
 	github.com/rancher/rancher/pkg/apis v0.0.0
 	github.com/rancher/shepherd v0.0.0-20260430211500-1f50d155268e
 	github.com/rancher/tests/actions v0.0.0-20260427222935-93821bd449b4
