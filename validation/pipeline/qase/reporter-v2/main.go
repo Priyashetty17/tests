@@ -30,6 +30,7 @@ var (
 	_, callerFilePath, _, _ = runtime.Caller(0)
 	basepath                = filepath.Join(filepath.Dir(callerFilePath), "..", "..", "..", "..")
 	validStatus             = map[string]string{"pass": "passed", "fail": "failed", "skip": "skipped"}
+	rancherTestCommitID     = os.Getenv(qase.RancherTestCommitID)
 )
 
 const (
@@ -57,7 +58,7 @@ func main() {
 			runID, err = strconv.ParseInt(runIDEnvVar, 10, 64)
 		}
 
-		runDescription := createRunDescription(buildUrl)
+		runDescription := createRunDescription(buildUrl, rancherTestCommitID)
 
 		if testRunName != "" {
 			resp, err := qaseService.CreateTestRun(testRunName, projectIDEnvVar, runDescription)
@@ -319,19 +320,26 @@ func hasCustomFieldValue(customFields []upstream.CustomFieldValue, expectedValue
 }
 
 // createRunDescription build the Qase test run description
-func createRunDescription(buildUrl string) string {
+func createRunDescription(buildUrl string, commitId string) string {
 	var description strings.Builder
 
 	if buildUrl != "" {
 		description.WriteString("Jenkins Job")
 		description.WriteString("\n")
 		description.WriteString(buildUrl)
+		description.WriteString("\n")
+	}
+
+	if commitId != "" {
+		description.WriteString("Rancher Test Commit ID")
+		description.WriteString("\n")
+		description.WriteString(commitId)
+		description.WriteString("\n")
 	}
 
 	versions := getVersionInformation()
 	if versions != "" {
 		if description.Len() > 0 {
-			description.WriteString("\n")
 			description.WriteString("\n")
 		}
 		description.WriteString(versions)
