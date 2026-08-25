@@ -1,0 +1,72 @@
+[
+  {
+    "date": "August 25, 2026 at 05:21 AM",
+    "status": "failure",
+    "workflow": "day2-ops-proxy-rancher",
+    "job": "v2-14",
+    "timestamp": "2026-08-25T05:21:00Z"
+  },
+  {
+    "date": "August 25, 2026 at 05:21 AM",
+    "status": "failure",
+    "workflow": "day2-ops-proxy-rancher",
+    "job": "v2-15",
+    "timestamp": "2026-08-25T05:21:00Z"
+  },
+  {
+    "date": "August 25, 2026 at 09:22 AM",
+    "status": "failure",
+    "workflow": "day2-ops-rancher",
+    "job": "v2-14",
+    "timestamp": "2026-08-25T09:22:00Z"
+  },
+  {
+    "date": "August 24, 2026 at 09:38 AM",
+    "status": "failure",
+    "workflow": "dualstack-cluster-provisioning",
+    "job": "v2-14",
+    "timestamp": "2026-08-24T09:38:00Z"
+  },
+  {
+    "date": "August 24, 2026 at 09:39 AM",
+    "status": "failure",
+    "workflow": "dualstack-cluster-provisioning",
+    "job": "v2-15",
+    "timestamp": "2026-08-24T09:39:00Z"
+  },
+  {
+    "date": "August 24, 2026 at 09:52 AM",
+    "status": "failure",
+    "workflow": "dualstack-rancher-ipv6-cluster-provisioning",
+    "job": "v2-14",
+    "timestamp": "2026-08-24T09:52:00Z"
+  },
+  {
+    "date": "August 24, 2026 at 09:52 AM",
+    "status": "failure",
+    "workflow": "dualstack-rancher-ipv6-cluster-provisioning",
+    "job": "v2-15",
+    "timestamp": "2026-08-24T09:52:00Z"
+  },
+  {
+    "date": "August 24, 2026 at 08:53 AM",
+    "status": "failure",
+    "workflow": "ipv6-cluster-provisioning",
+    "job": "v2-14",
+    "timestamp": "2026-08-24T08:53:00Z"
+  },
+  {
+    "date": "August 24, 2026 at 08:53 AM",
+    "status": "failure",
+    "workflow": "ipv6-cluster-provisioning",
+    "job": "v2-15",
+    "timestamp": "2026-08-24T08:53:00Z"
+  },
+  {
+    "date": "August 24, 2026 at 10:26 AM",
+    "status": "failure",
+    "workflow": "rancher-upgrade-cluster-provisioning-test",
+    "job": "v2-14",
+    "timestamp": "2026-08-24T10:26:00Z"
+  }
+]
