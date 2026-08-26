@@ -68,5 +68,103 @@
     "workflow": "rancher-upgrade-cluster-provisioning-test",
     "job": "v2-14",
     "timestamp": "2026-08-24T10:26:00Z"
+  },
+  {
+    "date": "",
+    "status": "failure",
+    "workflow": "arm64-cluster-provisioning",
+    "job": "v2-14",
+    "timestamp": "2026-08-26T12:43:15Z"
+  },
+  {
+    "date": "",
+    "status": "failure",
+    "workflow": "arm64-cluster-provisioning",
+    "job": "v2-15",
+    "timestamp": "2026-08-26T12:43:15Z"
+  },
+  {
+    "date": "",
+    "status": "failure",
+    "workflow": "arm64-cluster-provisioning",
+    "job": "v2-16",
+    "timestamp": "2026-08-26T12:43:15Z"
+  },
+  {
+    "date": "",
+    "status": "failure",
+    "workflow": "capi-pnp-cluster-provisioning",
+    "job": "v2-15",
+    "timestamp": "2026-08-26T12:43:15Z"
+  },
+  {
+    "date": "",
+    "status": "failure",
+    "workflow": "capi-pnp-cluster-provisioning",
+    "job": "v2-16",
+    "timestamp": "2026-08-26T12:43:15Z"
+  },
+  {
+    "date": "",
+    "status": "failure",
+    "workflow": "cluster-provisioning",
+    "job": "v2-14",
+    "timestamp": "2026-08-26T12:43:15Z"
+  },
+  {
+    "date": "",
+    "status": "failure",
+    "workflow": "cluster-provisioning",
+    "job": "v2-15",
+    "timestamp": "2026-08-26T12:43:15Z"
+  },
+  {
+    "date": "",
+    "status": "failure",
+    "workflow": "cluster-provisioning",
+    "job": "v2-16",
+    "timestamp": "2026-08-26T12:43:15Z"
+  },
+  {
+    "date": "",
+    "status": "failure",
+    "workflow": "day2-ops-capi-pnp",
+    "job": "v2-15",
+    "timestamp": "2026-08-26T12:43:15Z"
+  },
+  {
+    "date": "",
+    "status": "failure",
+    "workflow": "day2-ops-capi-pnp",
+    "job": "v2-16",
+    "timestamp": "2026-08-26T12:43:15Z"
+  },
+  {
+    "date": "August 26, 2026 at 08:47 AM",
+    "status": "failure",
+    "workflow": "upgrade-local-cluster-test",
+    "job": "v2-13",
+    "timestamp": "2026-08-26T08:47:00Z"
+  },
+  {
+    "date": "August 26, 2026 at 08:47 AM",
+    "status": "failure",
+    "workflow": "upgrade-local-cluster-test",
+    "job": "v2-14",
+    "timestamp": "2026-08-26T08:47:00Z"
+  },
+  {
+    "date": "August 26, 2026 at 08:47 AM",
+    "status": "failure",
+    "workflow": "upgrade-local-cluster-test",
+    "job": "v2-15",
+    "timestamp": "2026-08-26T08:47:00Z"
+  },
+  {
+    "date": "August 26, 2026 at 08:47 AM",
+    "status": "failure",
+    "workflow": "upgrade-local-cluster",
+    "job": "v2-16",
+    "timestamp": "2026-08-26T08:47:00Z"
   }
 ]
