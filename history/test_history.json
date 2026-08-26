@@ -166,5 +166,75 @@
     "workflow": "upgrade-local-cluster",
     "job": "v2-16",
     "timestamp": "2026-08-26T08:47:00Z"
+  },
+  {
+    "date": "",
+    "status": "failure",
+    "workflow": "arm64-cluster-provisioning",
+    "job": "v2-14",
+    "timestamp": "2026-08-26T19:44:52Z"
+  },
+  {
+    "date": "",
+    "status": "failure",
+    "workflow": "arm64-cluster-provisioning",
+    "job": "v2-15",
+    "timestamp": "2026-08-26T19:44:52Z"
+  },
+  {
+    "date": "",
+    "status": "failure",
+    "workflow": "arm64-cluster-provisioning",
+    "job": "v2-16",
+    "timestamp": "2026-08-26T19:44:52Z"
+  },
+  {
+    "date": "",
+    "status": "failure",
+    "workflow": "capi-pnp-cluster-provisioning",
+    "job": "v2-15",
+    "timestamp": "2026-08-26T19:44:52Z"
+  },
+  {
+    "date": "",
+    "status": "failure",
+    "workflow": "capi-pnp-cluster-provisioning",
+    "job": "v2-16",
+    "timestamp": "2026-08-26T19:44:52Z"
+  },
+  {
+    "date": "",
+    "status": "failure",
+    "workflow": "cluster-provisioning",
+    "job": "v2-14",
+    "timestamp": "2026-08-26T19:44:52Z"
+  },
+  {
+    "date": "",
+    "status": "failure",
+    "workflow": "cluster-provisioning",
+    "job": "v2-15",
+    "timestamp": "2026-08-26T19:44:52Z"
+  },
+  {
+    "date": "",
+    "status": "failure",
+    "workflow": "cluster-provisioning",
+    "job": "v2-16",
+    "timestamp": "2026-08-26T19:44:52Z"
+  },
+  {
+    "date": "",
+    "status": "failure",
+    "workflow": "day2-ops-capi-pnp",
+    "job": "v2-15",
+    "timestamp": "2026-08-26T19:44:52Z"
+  },
+  {
+    "date": "",
+    "status": "failure",
+    "workflow": "day2-ops-capi-pnp",
+    "job": "v2-16",
+    "timestamp": "2026-08-26T19:44:52Z"
   }
 ]
